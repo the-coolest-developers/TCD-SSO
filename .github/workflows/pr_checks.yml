@@ -1,0 +1,85 @@
+name: PR and commit checks
+
+on:
+#  push:
+#    branches: [ develop, feature/*, bugfix/*, release/* ]
+  pull_request:
+    branches:
+      - develop
+      - release
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+jobs:
+  pr_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: vijaykramesh/pr-lint-action@v1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - uses: actions/checkout@v2
+#
+#      # Runs a set of commands using the runners shell
+#      - name: Check commit message name
+#        run: |
+#          #!/usr/bin/env bash
+#          #
+#          # An example hook script to verify what is about to be committed.
+#          # Called by "git commit" with no arguments.  The hook should
+#          # exit with non-zero status after issuing an appropriate message if
+#          # it wants to stop the commit.
+#          #
+#          # To enable this hook, rename this file to "pre-commit".
+#          valid_commit_regex_jira="^(Revert\")?[\[]?[a-zA-Z]{2,10}-[0-9]{1,10}[\]]?(.*)?$"
+#
+#          error_message="Commit message in this project must adhere to this contract
+#          '<jira-ticket-id> commit description'
+#          eg. TG-123 fixes foobar
+#
+#          When you squash and merge it uses the pull request title which also needs to conform to the contract.
+#
+#          Please rename your commit message using 'git commit --amend'
+#          to include the ticket ID as prefix and try again.
+#          Optionally [] can be added around ticket ID, eg. [TG-123]"
+#
+#          failed=false
+#          zero_commit="0000000000000000000000000000000000000000"
+#          while read from_ref to_ref ref_name; do
+#            if [[ "$to_ref" == "$zero_commit" ]]; then
+#              # do not validate case of branch removing
+#              continue
+#            fi
+#
+#            if [[ "$from_ref" == "$zero_commit" ]]; then
+#              # if it is a new branch then check all branches related commits
+#              boundaries=($(git rev-list --simplify-by-decoration -2 "$to_ref"))
+#              commits=($(git rev-list --no-merges --first-parent "${boundaries[0]}".."$to_ref"))
+#            else
+#              # if it is existing branch then check only new commits
+#              commits=($(git rev-list --no-merges --first-parent "$from_ref".."$to_ref"))
+#            fi
+#
+#            for commit in "${commits[@]}"; do
+#              message=$(git show -s --format=%B "$commit" | head -1)
+#
+#              if ! (grep -Pq "$valid_commit_regex_jira" <<< "$message"); then
+#                if ! failed; then
+#                  # add first newline
+#                  echo "" >&2
+#                fi
+#
+#                echo "${commit:0:8} commit doesn't contain a ticket ID" >&2
+#
+#                failed=true
+#              fi
+#            done
+#          done
+#
+#          if $failed; then
+#            echo "">&2
+#            echo "$error_message" >&2
+#            exit 1
+#          fi
