@@ -1,0 +1,34 @@
+# This workflow integrates Scan with GitHub's code scanning feature
+# Scan is a free open-source security tool for modern DevOps teams from ShiftLeft
+# Visit https://slscan.io/en/latest/integrations/code-scan for help
+name: SQLCheck
+
+on:
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
+
+jobs:
+  Scan-SQL:
+    # Scan runs on ubuntu, mac and windows
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # Instructions
+    # 1. Setup JDK, Node.js, Python etc depending on your project type
+    # 2. Compile or build the project before invoking scan
+    #    Example: mvn compile, or npm install or pip install goes here
+    # 3. Invoke Scan with the github token. Leave the workspace empty to use relative url
+
+    - name: SQLCheck
+      # You may pin to the exact commit or the version.
+      # uses: yokawasa/action-sqlcheck@0637a74e5cb52207e4f02042c093709d0756f129
+      uses: yokawasa/action-sqlcheck@v1.3.0
+      with:
+        # Post comment to PR
+        post-comment: true 
+        # Set of SQL anti-patterns to check: 1,2, or 3
+        risk-level: 1
+        # Path(s) of directory under which the action check any files whether they are part of the repository or not. By default, the action checks only files in PR queries. By specifying directories the action no longer check files in PR queries but files under the directories
+        directories: |
+          DataBase

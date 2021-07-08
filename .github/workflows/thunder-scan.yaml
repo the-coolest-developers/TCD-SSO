@@ -1,0 +1,23 @@
+name: "DefenseCode ThunderScan"
+
+on:
+#   push:
+#     branches: [ develop, feature/TG-*, release ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
+#   schedule:
+#     - cron: '30 20 * * 6'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: DefenseCode ThunderScan Action
+      uses: defensecode/thunderscan-action@v1.0
