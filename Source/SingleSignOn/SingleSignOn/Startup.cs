@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
+using WebApiBaseLibrary.Authorization.Models;
 
 namespace SingleSignOn
 {
