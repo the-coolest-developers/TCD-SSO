@@ -1,8 +1,8 @@
 name: "DefenseCode ThunderScan"
 
 on:
-#   push:
-#     branches: [ develop, feature/TG-*, release ]
+  push:
+    branches: [ develop, release ]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ develop ]
