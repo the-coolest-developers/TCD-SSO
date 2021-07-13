@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
-using WebApiBaseLibrary.Authorization.Models;
 
 namespace SingleSignOn
 {
@@ -37,7 +32,19 @@ namespace SingleSignOn
 
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();
 
-            services.AddConfiguredJwtBearer(_serviceProvider);
+            //services.AddConfiguredJwtBearer(_serviceProvider);
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                var jwtConfigurator = _serviceProvider.GetService<IJwtConfigurator>();
+
+                options.RequireHttpsMetadata = true;
+                options.TokenValidationParameters = jwtConfigurator?.ValidationParameters;
+            });
+            
             services.AddAuthorization();
 
             services.AddControllers();

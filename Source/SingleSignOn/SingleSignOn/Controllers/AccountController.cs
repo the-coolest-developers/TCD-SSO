@@ -12,8 +12,6 @@ using WebApiBaseLibrary.Controllers;
 
 namespace SingleSignOn.Controllers
 {
-    [ApiController]
-    [Route("accounts")]
     public class AccountController : BaseController
     {
         private readonly IMediator _mediator;
