@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SingleSignOn.DataAccess.Context;
+using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
@@ -34,6 +35,8 @@ namespace SingleSignOn
             var databaseConnectionString = Configuration.GetConnectionString("PostgreSqlAws");
 
             services.AddDbContext<AccountContext>(options => options.UseNpgsql(databaseConnectionString));
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
 
             services.AddSingletonJwtConfiguration(Configuration);
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();
