@@ -33,19 +33,13 @@ namespace SingleSignOn
 
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();
 
-            //services.AddConfiguredJwtBearer(_serviceProvider);
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            services.AddConfiguredJwtBearer(() =>
             {
                 var jwtConfigurator = _serviceProvider.GetService<IJwtConfigurator>();
 
-                options.RequireHttpsMetadata = true;
-                options.TokenValidationParameters = jwtConfigurator?.ValidationParameters;
+                return jwtConfigurator?.ValidationParameters;
             });
-            
+
             services.AddAuthorization();
 
             services.AddControllers();
