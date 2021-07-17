@@ -4,10 +4,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SingleSignOn.DataAccess.Context;
+using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
@@ -29,10 +32,14 @@ namespace SingleSignOn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var databaseConnectionString = Configuration.GetConnectionString("PostgreSqlAws");
+
+            services.AddDbContext<AccountContext>(options => options.UseNpgsql(databaseConnectionString));
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
+
             services.AddSingletonJwtConfiguration(Configuration);
-
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();
-
             services.AddConfiguredJwtBearer(() =>
             {
                 var jwtConfigurator = _serviceProvider.GetService<IJwtConfigurator>();

@@ -8,6 +8,7 @@
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
@@ -18,6 +19,13 @@
       <Reference Include="WebApiBaseLibrary.Authorization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Authorization\bin\Release\net5.0\WebApiBaseLibrary.Authorization.dll</HintPath>
       </Reference>
+      <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
     </ItemGroup>
 
 </Project>
