@@ -2,9 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using SingleSignOn.DataAccess.Entities;
 using SingleSignOn.DataAccess.Repositories;
+using WebApiBaseLibrary.Authorization.Generators;
 using WebApiBaseLibrary.Enums;
+using WebApiBaseLibrary.Infrastructure.Generators;
 using WebApiBaseLibrary.Responses;
 
 namespace SingleSignOn.Commands
@@ -24,10 +27,14 @@ namespace SingleSignOn.Commands
                 IRequestHandler<RegisterAccountCommand, Response<Unit>>
         {
             private readonly IAccountRepository _accountRepository;
+            private readonly IHashGenerator _hashGenerator;
 
-            public RegisterAccountCommandHandler(IAccountRepository accountRepository)
+            public RegisterAccountCommandHandler(
+                IAccountRepository accountRepository,
+                IHashGenerator hashGenerator)
             {
                 _accountRepository = accountRepository;
+                _hashGenerator = hashGenerator;
             }
 
             public async Task<Response<Unit>> Handle(
@@ -42,12 +49,15 @@ namespace SingleSignOn.Commands
                     };
                 }
 
+                var passwordHash = await _hashGenerator.GenerateSaltedHash(request.Password);
+
                 var account = new Account
                 {
                     Id = new Guid(),
                     Email = request.Email,
                     FirstName = request.FirstName,
-                    LastName = request.LastName
+                    LastName = request.LastName,
+                    PasswordHash = passwordHash
                 };
 
                 await _accountRepository.CreateAsync(account);
