@@ -19,6 +19,9 @@
       <Reference Include="WebApiBaseLibrary.Authorization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Authorization\bin\Release\net5.0\WebApiBaseLibrary.Authorization.dll</HintPath>
       </Reference>
+      <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <ItemGroup>
