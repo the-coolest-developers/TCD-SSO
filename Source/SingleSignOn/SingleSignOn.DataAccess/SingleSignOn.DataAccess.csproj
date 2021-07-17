@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

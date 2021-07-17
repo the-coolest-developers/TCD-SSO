@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Responses;
 
@@ -17,6 +18,13 @@ namespace SingleSignOn.Requests
         public class AuthorizeAccountCommandHandler :
             IRequestHandler<AuthorizeAccountRequest, Response<AuthorizeAccountResponse>>
         {
+            private readonly IAccountRepository _accountRepository;
+
+            public AuthorizeAccountCommandHandler(IAccountRepository accountRepository)
+            {
+                _accountRepository = accountRepository;
+            }
+
             public Task<Response<AuthorizeAccountResponse>> Handle(
                 AuthorizeAccountRequest request,
                 CancellationToken cancellationToken)
