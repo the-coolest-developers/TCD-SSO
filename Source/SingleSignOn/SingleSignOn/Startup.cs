@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,8 @@ using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
-using WebApiBaseLibrary.Authorization.Models;
+using WebApiBaseLibrary.Infrastructure.Extensions;
+using WebApiBaseLibrary.Infrastructure.Generators;
 
 namespace SingleSignOn
 {
@@ -37,6 +37,9 @@ namespace SingleSignOn
             services.AddDbContext<AccountContext>(options => options.UseNpgsql(databaseConnectionString));
 
             services.AddScoped<IAccountRepository, AccountRepository>();
+
+            services.AddSingletonHashConfiguration(Configuration);
+            services.AddScoped<IHashGenerator, HashGenerator>();
 
             services.AddSingletonJwtConfiguration(Configuration);
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();

@@ -2,10 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using SingleSignOn.DataAccess.Entities;
 using SingleSignOn.DataAccess.Repositories;
-using WebApiBaseLibrary.Authorization.Generators;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Infrastructure.Generators;
 using WebApiBaseLibrary.Responses;
