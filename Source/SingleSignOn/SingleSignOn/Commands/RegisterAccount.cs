@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Entities;
 using SingleSignOn.DataAccess.Repositories;
+using WebApiBaseLibrary.Authorization.Enums;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Infrastructure.Generators;
 using WebApiBaseLibrary.Responses;
@@ -52,6 +53,7 @@ namespace SingleSignOn.Commands
                 var account = new Account
                 {
                     Id = new Guid(),
+                    RoleId = (int) UserRole.User,
                     Email = request.Email,
                     FirstName = request.FirstName,
                     LastName = request.LastName,

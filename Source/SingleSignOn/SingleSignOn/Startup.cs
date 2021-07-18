@@ -13,6 +13,7 @@ using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
+using WebApiBaseLibrary.Authorization.Generators;
 using WebApiBaseLibrary.Infrastructure.Extensions;
 using WebApiBaseLibrary.Infrastructure.Generators;
 
@@ -49,6 +50,7 @@ namespace SingleSignOn
 
                 return jwtConfigurator?.ValidationParameters;
             });
+            services.AddScoped<IJwtGenerator, JwtGenerator>();
 
             services.AddAuthorization();
 

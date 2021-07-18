@@ -16,6 +16,16 @@ namespace SingleSignOn.DataAccess.Repositories
             _accountContext = accountContext;
         }
 
+        public Account GetWithEmail(string email)
+        {
+            return _accountContext.Accounts.FirstOrDefault(account => account.Email == email);
+        }
+
+        public Task<Account> GetWithEmailAsync(string email)
+        {
+            return _accountContext.Accounts.FirstOrDefaultAsync(account => account.Email == email);
+        }
+
         public bool ExistsWithEmail(string email)
         {
             return EntityDbSet.Any(account => account.Email == email);
