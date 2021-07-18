@@ -32,7 +32,8 @@ workflows:
   sample_build:
     jobs:
       - build_job:
-          # context: test_circleci_context
+          context: 
+            - Tokens 
           name: Build
           post-steps:
             - jira/notify:
