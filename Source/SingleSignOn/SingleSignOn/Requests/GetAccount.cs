@@ -40,7 +40,8 @@ namespace SingleSignOn.Requests
 
                     return new Response<GetAccountResponse>
                     {
-                        Result = getAccountResponse
+                        Result = getAccountResponse,
+                        Status = ResponseStatus.Success
                     };
                 }
 
