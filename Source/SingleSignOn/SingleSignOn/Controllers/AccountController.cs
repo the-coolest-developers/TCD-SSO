@@ -37,7 +37,7 @@ namespace SingleSignOn.Controllers
         [HttpGet("get")]
         public async Task<ActionResult<GetAccount.GetAccountResponse>> GetAccount()
         {
-            var userId = Guid.Parse(User.GetClaim(WebApiClaimTypes.UserId).Value);
+            var userId = Guid.Parse(User.GetClaim(WebApiClaimTypes.AccountId).Value);
 
             var getAccountRequest = new GetAccount.GetAccountRequest
             {
