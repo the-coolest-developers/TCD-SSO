@@ -24,20 +24,37 @@ namespace SingleSignOn.Requests
                 _accountRepository = accountRepository;
             }
 
-            public Task<Response<GetAccountResponse>> Handle(
+            public async Task<Response<GetAccountResponse>> Handle(
                 GetAccountRequest request,
                 CancellationToken cancellationToken)
             {
-                return Task.FromResult(new Response<GetAccountResponse>
+                var account = await _accountRepository.GetAsync(request.AccountId);
+
+                if (account != null)
                 {
-                    Status = ResponseStatus.Accepted
-                });
+                    var getAccountResponse = new GetAccountResponse
+                    {
+                        FirstName = account.FirstName,
+                        LastName = account.LastName
+                    };
+
+                    return new Response<GetAccountResponse>
+                    {
+                        Result = getAccountResponse
+                    };
+                }
+
+                return new Response<GetAccountResponse>
+                {
+                    Status = ResponseStatus.Unauthorized
+                };
             }
         }
 
         public class GetAccountResponse
         {
-            public string Token { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
         }
     }
 }
