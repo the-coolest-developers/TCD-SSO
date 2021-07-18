@@ -5,13 +5,13 @@ on:
     branches: [ develop, release ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ develop ]
+    branches: [ develop, release ]
 #   schedule:
 #     - cron: '30 20 * * 6'
 
 jobs:
   analyze:
-    name: Analyze
+    name: ThunderScan Analyze
     runs-on: ubuntu-latest
     permissions:
       actions: read
