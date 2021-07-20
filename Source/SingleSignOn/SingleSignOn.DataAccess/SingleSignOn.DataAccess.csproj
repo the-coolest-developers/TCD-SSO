@@ -6,12 +6,17 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+      <!-- WebApiBasLibrary -->
+      <PackageReference Include="WebApiBaseLibrary" Version="1.0.0.0-develop" />
+      <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.0.0-develop" />
+      <PackageReference Include="WebApiBaseLibrary.DataAccess" Version="1.0.0.0-develop" /> 
+      <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.0.0-develop" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!-- <ItemGroup>
       <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
       </Reference>
-    </ItemGroup>
+    </ItemGroup> -->
 
 </Project>
