@@ -19,7 +19,7 @@
 
     </ItemGroup>
 
-    <ItemGroup>
+    <!-- <ItemGroup>
       <Reference Include="WebApiBaseLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary\bin\Release\net5.0\WebApiBaseLibrary.dll</HintPath>
       </Reference>
@@ -32,7 +32,7 @@
       <Reference Include="WebApiBaseLibrary.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Infrastructure\bin\Release\net5.0\WebApiBaseLibrary.Infrastructure.dll</HintPath>
       </Reference>
-    </ItemGroup>
+    </ItemGroup> -->
 
     <ItemGroup>
       <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
