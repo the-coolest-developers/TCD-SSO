@@ -37,13 +37,13 @@ jobs:
             
             dotnet build --output /root/project/output/Build/ $PROJECT_NAME/$PROJECT_NAME.sln
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
-          root: /root/project/
-          # Must be relative path from root
-          paths:
-            - output/Build/
+      # - persist_to_workspace:
+      #     # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+      #     # taken to be the root directory of the workspace.
+      #     root: /root/project/
+      #     # Must be relative path from root
+      #     paths:
+      #       - output/Build/
 
   pack_code:
     parameters: # parameters are at the job level
@@ -55,9 +55,9 @@ jobs:
     executor: dotnet_executor
     steps:
       - checkout
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: /root/project/output/Build/
+      # - attach_workspace:
+      #     # Must be absolute path or relative path from working_directory
+      #     at: /root/project/output/Build/
       
       - run:
           name: Configure Nuget
@@ -80,13 +80,15 @@ jobs:
             
             if [[ "$CIRCLE_BRANCH" == "develop" ]];
             then
-              CPACK="Developmnet"
+              CPACK="Debug"
             else
               CPACK="Release"
             fi
             
-            # dotnet pack -c $CPACK /p:Configuration=Debug /p:Platform="Any CPU" --version-suffix $CIRCLE_BRANCH -o /root/project/output/Nuget $PROJECT_NAME/$PROJECT_NAME.sln
-            dotnet pack -c $CPACK /p:Configuration=Debug /p:Platform="Any CPU" --version-suffix $CIRCLE_BRANCH -o /root/project/output/Build /p:OutputPath=/root/project/output/Nuget $PROJECT_NAME/$PROJECT_NAME.sln
+            dotnet pack -c $CPACK \
+            --version-suffix $CIRCLE_BRANCH \
+            -o /root/project/output/Nuget \
+            $PROJECT_NAME/$PROJECT_NAME.sln
       
       - run:
           working_directory: ./output/
