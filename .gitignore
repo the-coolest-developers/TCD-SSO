@@ -78,3 +78,8 @@ fabric.properties
 **/bin
 
 *.sln.DotSettings.user
+
+*.dbtcache
+*.dbtcache.v2
+*.v2
+*.suo
