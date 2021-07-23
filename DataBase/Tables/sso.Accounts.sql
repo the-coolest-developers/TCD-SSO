@@ -1,4 +1,4 @@
-create table if not exists "SSO"."Accounts"
+create table if not exists "sso"."Accounts"
 (
 	"Id" uuid,
 	"RoleId" smallint,

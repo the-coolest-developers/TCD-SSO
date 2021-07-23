@@ -1,1 +1,1 @@
-create schema if not exists SSO;
+create schema if not exists sso;

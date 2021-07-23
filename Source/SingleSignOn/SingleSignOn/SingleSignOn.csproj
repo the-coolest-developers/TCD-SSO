@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <IsPackable>true</IsPackable>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,28 +14,9 @@
         <PackageReference Include="WebApiBaseLibrary" Version="1.0.0-release" />
         <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.0-release" />
         <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.0-release" />
-        
-        <!-- WebApiBasLibrary -->
-
     </ItemGroup>
-
-    <!-- <ItemGroup>
-      <Reference Include="WebApiBaseLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary\bin\Release\net5.0\WebApiBaseLibrary.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.Authorization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Authorization\bin\Release\net5.0\WebApiBaseLibrary.Authorization.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Infrastructure\bin\Release\net5.0\WebApiBaseLibrary.Infrastructure.dll</HintPath>
-      </Reference>
-    </ItemGroup> -->
 
     <ItemGroup>
-      <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
+        <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
     </ItemGroup>
-
 </Project>
