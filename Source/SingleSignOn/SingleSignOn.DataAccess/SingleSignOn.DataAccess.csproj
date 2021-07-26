@@ -3,6 +3,7 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <!-- Libs from nuget.org -->
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8"/>
         <PackageReference Include="WebApiBaseLibrary.DataAccess" Version="1.0.3"/>

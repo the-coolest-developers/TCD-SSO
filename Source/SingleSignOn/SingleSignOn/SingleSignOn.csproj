@@ -6,12 +6,17 @@
         <VersionSuffix>develop</VersionSuffix>
     </PropertyGroup>
 
+    <!-- Libs from nuget.org -->
     <ItemGroup>
         <PackageReference Include="MediatR" Version="9.0.0"/>
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+    </ItemGroup>
+    
+    <!-- TCD writen libs from own artifactory -->
+    <ItemGroup>
         <PackageReference Include="WebApiBaseLibrary" Version="1.0.3"/>
         <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.3"/>
         <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.3"/>
