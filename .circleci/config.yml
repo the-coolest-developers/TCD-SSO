@@ -81,12 +81,14 @@ jobs:
             if [[ "$CIRCLE_BRANCH" == "develop" ]];
             then
               CPACK="Debug"
-            else
+              VSUFFIX=$CIRCLE_BRANCH
+            elif [[ "$CIRCLE_BRANCH" == "release" ]];
+            then
               CPACK="Release"
             fi
             
             dotnet pack -c $CPACK \
-            --version-suffix $CIRCLE_BRANCH \
+            --version-suffix "$VSUFFIX" \
             -o /root/project/output/Nuget \
             $PROJECT_NAME/$PROJECT_NAME.sln
       
