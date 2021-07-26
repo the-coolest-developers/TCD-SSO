@@ -53,9 +53,25 @@ jobs:
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Configure Artifactory and Build
+      env:
+        ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
+        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USER }}
+        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_USER_PASSWORD }}
+      run: |
+        dotnet nuget add source $ARTIFACTORY_URL \
+          --name Artifactory \
+          --username $ARTIFACTORY_USERNAME \
+          --password "$ARTIFACTORY_PASSWORD" \
+          --store-password-in-clear-text
+
     - name: Autobuild
       uses: github/codeql-action/autobuild@v1
-      # working-directory: ./Source/SingleSignOn/
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -65,7 +81,6 @@ jobs:
     #    uses a compiled language
 
 #    - run: |
-#        dotnet build ./Source/SingleSignOn/SingleSignOn.sln
     #   make bootstrap
     #   make release
 

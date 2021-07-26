@@ -1,42 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <IsPackable>true</IsPackable>
+        <VersionPrefix>1.0.3</VersionPrefix>
+        <VersionSuffix>develop</VersionSuffix>
     </PropertyGroup>
 
+    <!-- Libs from nuget.org -->
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="10.3.1" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.1" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-        
-        <!-- WebApiBasLibrary -->
-        <PackageReference Include="WebApiBaseLibrary" Version="1.0.0.0-develop" />
-        <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.0.0-develop" />
-        <PackageReference Include="WebApiBaseLibrary.DataAccess" Version="1.0.0.0-develop" /> 
-        <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.0.0-develop" />
-
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
     </ItemGroup>
-
-    <!-- <ItemGroup>
-      <Reference Include="WebApiBaseLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary\bin\Release\net5.0\WebApiBaseLibrary.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.Authorization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Authorization\bin\Release\net5.0\WebApiBaseLibrary.Authorization.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.DataAccess\bin\Release\net5.0\WebApiBaseLibrary.DataAccess.dll</HintPath>
-      </Reference>
-      <Reference Include="WebApiBaseLibrary.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\WebApiBaseLibrary\WebApiBaseLibrary.Infrastructure\bin\Release\net5.0\WebApiBaseLibrary.Infrastructure.dll</HintPath>
-      </Reference>
-    </ItemGroup> -->
+    
+    <!-- TCD writen libs from own artifactory -->
+    <ItemGroup>
+        <PackageReference Include="WebApiBaseLibrary" Version="1.0.5" />
+        <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.6" />
+        <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.7" />
+    </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
+        <ProjectReference Include="..\SingleSignOn.DataAccess\SingleSignOn.DataAccess.csproj" />
     </ItemGroup>
-
 </Project>
