@@ -83,3 +83,4 @@ fabric.properties
 *.dbtcache.v2
 *.v2
 *.suo
+test.sh
