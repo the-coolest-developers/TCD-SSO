@@ -79,7 +79,10 @@ fabric.properties
 
 *.sln.DotSettings.user
 
+output
+
 *.dbtcache
 *.dbtcache.v2
 *.v2
 *.suo
+.vs
