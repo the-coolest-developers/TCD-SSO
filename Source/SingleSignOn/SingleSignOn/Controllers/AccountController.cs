@@ -12,26 +12,23 @@ using WebApiBaseLibrary.Controllers;
 
 namespace SingleSignOn.Controllers
 {
-    public class AccountController : BaseController
+    public class AccountController : BaseMediatorController
     {
-        private readonly IMediator _mediator;
-
-        public AccountController(IMediator mediator)
+        public AccountController(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<Unit>> Register(
             [Required] [FromBody] RegisterAccount.RegisterAccountCommand registerAccountCommand)
         {
-            return await ExecuteActionAsync(await _mediator.Send(registerAccountCommand));
+            return await ExecuteActionAsync(await Mediator.Send(registerAccountCommand));
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<AuthorizeAccount.AuthorizeAccountResponse>> Login(
             [Required] [FromBody] AuthorizeAccount.AuthorizeAccountRequest authorizeAccountRequest)
-            => await ExecuteActionAsync(await _mediator.Send(authorizeAccountRequest));
+            => await ExecuteActionAsync(await Mediator.Send(authorizeAccountRequest));
 
         [Authorize]
         [HttpGet("get")]
@@ -44,7 +41,7 @@ namespace SingleSignOn.Controllers
                 AccountId = userId
             };
 
-            return await ExecuteActionAsync(await _mediator.Send(getAccountRequest));
+            return await ExecuteActionAsync(await Mediator.Send(getAccountRequest));
         }
     }
 }
