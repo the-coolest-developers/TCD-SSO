@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Entities;
 using SingleSignOn.DataAccess.Repositories;
+using SingleSignOn.DataAccess.Validators;
 using WebApiBaseLibrary.Authorization.Enums;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Infrastructure.Generators;
@@ -27,6 +28,7 @@ namespace SingleSignOn.Commands
         {
             private readonly IAccountRepository _accountRepository;
             private readonly IHashGenerator _hashGenerator;
+            private readonly RegisterAccountCommandValidator _validator;
 
             public RegisterAccountCommandHandler(
                 IAccountRepository accountRepository,
@@ -34,17 +36,20 @@ namespace SingleSignOn.Commands
             {
                 _accountRepository = accountRepository;
                 _hashGenerator = hashGenerator;
+                _validator = new RegisterAccountCommandValidator();
             }
 
             public async Task<Response<Unit>> Handle(
                 RegisterAccountCommand request,
                 CancellationToken cancellationToken)
             {
-                if (await _accountRepository.ExistsWithEmailAsync(request.Email))
+                var res = _validator.Validate(request);
+
+                if (await _accountRepository.ExistsWithEmailAsync(request.Email) || !res.IsValid)
                 {
                     return new Response<Unit>
                     {
-                        Status = ResponseStatus.Unauthorized
+                        Status = ResponseStatus.Conflict
                     };
                 }
 

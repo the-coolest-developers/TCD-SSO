@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Repositories;
+using SingleSignOn.Validators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Enums;
 using WebApiBaseLibrary.Authorization.Generators;
@@ -27,6 +28,7 @@ namespace SingleSignOn.Requests
             private readonly IAccountRepository _accountRepository;
             private readonly IHashGenerator _hashGenerator;
             private readonly IJwtGenerator _jwtGenerator;
+            private readonly AuthorizeAccountRequestValidator _validator;
 
             public AuthorizeAccountCommandHandler(
                 IAccountRepository accountRepository,
@@ -36,6 +38,7 @@ namespace SingleSignOn.Requests
                 _accountRepository = accountRepository;
                 _hashGenerator = hashGenerator;
                 _jwtGenerator = jwtGenerator;
+                _validator = new AuthorizeAccountRequestValidator();
             }
 
             public async Task<Response<AuthorizeAccountResponse>> Handle(
@@ -44,7 +47,9 @@ namespace SingleSignOn.Requests
             {
                 var account = await _accountRepository.GetWithEmailAsync(request.Email);
 
-                if (account != null)
+                var res = _validator.Validate(request);
+
+                if (account != null && res.IsValid)
                 {
                     var passwordHash = await _hashGenerator.GenerateSaltedHash(request.Password);
 
@@ -68,7 +73,7 @@ namespace SingleSignOn.Requests
 
                 return new Response<AuthorizeAccountResponse>
                 {
-                    Status = ResponseStatus.Unauthorized
+                    Status = ResponseStatus.Conflict
                 };
             }
         }
