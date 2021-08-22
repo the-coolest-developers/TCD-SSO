@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using SingleSignOn.Commands;
 
 namespace SingleSignOn.DataAccess.Validators
@@ -8,25 +9,32 @@ namespace SingleSignOn.DataAccess.Validators
         public RegisterAccountCommandValidator()
         {
             RuleFor(command => command.Email)
-                .MaximumLength(50)
                 .EmailAddress()
+                .MaximumLength(50)
                 .NotEmpty()
                 .NotNull();
             
+            RuleFor(command => command.Password)
+                .MaximumLength(50)
+                .NotNull()
+                .NotEmpty();
+
             RuleFor(command => command.FirstName)
                 .MaximumLength(50)
                 .NotNull()
                 .NotEmpty();
 
-            RuleFor(command => command.LastName)
-                .MaximumLength(50)
-                .NotNull()
-                .NotEmpty();
-
             RuleFor(a => a.LastName)
-                .MaximumLength(50)
+                .MaximumLength(10)
+                .WithMessage("401")
                 .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .WithMessage("ERROR");
+        }
+
+        public override ValidationResult Validate(ValidationContext<RegisterAccount.RegisterAccountCommand> context)
+        {
+            return base.Validate(context);
         }
     }
 }

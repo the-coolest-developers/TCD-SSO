@@ -28,8 +28,7 @@ namespace SingleSignOn.Requests
             private readonly IAccountRepository _accountRepository;
             private readonly IHashGenerator _hashGenerator;
             private readonly IJwtGenerator _jwtGenerator;
-            private readonly AuthorizeAccountRequestValidator _validator;
-
+            
             public AuthorizeAccountCommandHandler(
                 IAccountRepository accountRepository,
                 IHashGenerator hashGenerator,
@@ -38,7 +37,6 @@ namespace SingleSignOn.Requests
                 _accountRepository = accountRepository;
                 _hashGenerator = hashGenerator;
                 _jwtGenerator = jwtGenerator;
-                _validator = new AuthorizeAccountRequestValidator();
             }
 
             public async Task<Response<AuthorizeAccountResponse>> Handle(
@@ -47,9 +45,7 @@ namespace SingleSignOn.Requests
             {
                 var account = await _accountRepository.GetWithEmailAsync(request.Email);
 
-                var res = _validator.Validate(request);
-
-                if (account != null && res.IsValid)
+                if (account != null)
                 {
                     var passwordHash = await _hashGenerator.GenerateSaltedHash(request.Password);
 

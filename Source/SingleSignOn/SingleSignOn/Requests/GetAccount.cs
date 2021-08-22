@@ -19,23 +19,20 @@ namespace SingleSignOn.Requests
         public class GetAccountCommandHandler : IRequestHandler<GetAccountRequest, Response<GetAccountResponse>>
         {
             private readonly IAccountRepository _accountRepository;
-            private readonly GetAccountRequestValidator _validator;
 
             public GetAccountCommandHandler(IAccountRepository accountRepository)
             {
                 _accountRepository = accountRepository;
-                _validator = new GetAccountRequestValidator();
             }
 
             public async Task<Response<GetAccountResponse>> Handle(
                 GetAccountRequest request,
                 CancellationToken cancellationToken)
             {
-                var res = _validator.Validate(request);
 
                 var account = await _accountRepository.GetAsync(request.AccountId);
 
-                if (account != null && res.IsValid)
+                if (account != null)
                 {
                     var getAccountResponse = new GetAccountResponse
                     {
