@@ -11,14 +11,12 @@ namespace SingleSignOn.Validators
                 .EmailAddress()
                 .NotEmpty()
                 .NotNull()
-                .MaximumLength(50)
-                .WithMessage("Email is invalid");
+                .MaximumLength(50);
 
             RuleFor(request => request.Password)
                 .MaximumLength(50)
                 .NotNull()
-                .NotEmpty()
-                .WithMessage("Password is invalid");
+                .NotEmpty();
         }
     }
 }

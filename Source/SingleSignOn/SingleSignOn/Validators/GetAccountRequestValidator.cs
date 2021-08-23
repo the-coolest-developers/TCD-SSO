@@ -9,8 +9,7 @@ namespace SingleSignOn.Validators
         {
             RuleFor(request => request.AccountId)
                 .NotEmpty()
-                .NotNull()
-                .WithMessage("Id is invalid"); ;
+                .NotNull();
         }
     }
 }
