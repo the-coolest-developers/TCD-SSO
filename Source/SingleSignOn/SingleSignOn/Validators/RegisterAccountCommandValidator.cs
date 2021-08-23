@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 using SingleSignOn.Commands;
 
-namespace SingleSignOn.DataAccess.Validators
+namespace SingleSignOn.Validators
 {
     public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccount.RegisterAccountCommand>
     {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Entities;
 using SingleSignOn.DataAccess.Repositories;
-using SingleSignOn.DataAccess.Validators;
 using WebApiBaseLibrary.Authorization.Enums;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Infrastructure.Generators;
