@@ -36,7 +36,7 @@ namespace SingleSignOn
         {
             services.AddControllers().AddFluentValidation(fv =>
             {
-                fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+                fv.DisableDataAnnotationsValidation = true;
                 fv.RegisterValidatorsFromAssemblyContaining<Startup>();
             });
             
