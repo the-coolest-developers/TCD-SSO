@@ -33,10 +33,5 @@ namespace SingleSignOn.DataAccess.Validators
                 .NotNull()
                 .WithMessage("Last Name is invalid");
         }
-
-        public override ValidationResult Validate(ValidationContext<RegisterAccount.RegisterAccountCommand> context)
-        {
-            return base.Validate(context);
-        }
     }
 }
