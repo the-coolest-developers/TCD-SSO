@@ -7,29 +7,31 @@ namespace SingleSignOn.DataAccess.Validators
     public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccount.RegisterAccountCommand>
     {
         public RegisterAccountCommandValidator()
-        {
+        { 
             RuleFor(command => command.Email)
                 .EmailAddress()
                 .MaximumLength(50)
                 .NotEmpty()
-                .NotNull();
+                .NotNull()
+                .WithMessage("Email is invalid");
             
             RuleFor(command => command.Password)
                 .MaximumLength(50)
                 .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .WithMessage("Password is invalid"); 
 
             RuleFor(command => command.FirstName)
                 .MaximumLength(50)
                 .NotNull()
-                .NotEmpty();
-
-            RuleFor(a => a.LastName)
-                .MaximumLength(10)
-                .WithMessage("401")
-                .NotNull()
                 .NotEmpty()
-                .WithMessage("ERROR");
+                .WithMessage("First Name is invalid"); 
+
+            RuleFor(command => command.LastName)
+                .MaximumLength(50)
+                .NotEmpty()
+                .NotNull()
+                .WithMessage("Last Name is invalid");
         }
 
         public override ValidationResult Validate(ValidationContext<RegisterAccount.RegisterAccountCommand> context)
