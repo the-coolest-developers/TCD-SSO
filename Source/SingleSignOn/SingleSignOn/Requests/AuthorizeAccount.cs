@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Repositories;
+using SingleSignOn.Validators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Enums;
 using WebApiBaseLibrary.Authorization.Generators;
@@ -27,7 +28,7 @@ namespace SingleSignOn.Requests
             private readonly IAccountRepository _accountRepository;
             private readonly IHashGenerator _hashGenerator;
             private readonly IJwtGenerator _jwtGenerator;
-
+            
             public AuthorizeAccountCommandHandler(
                 IAccountRepository accountRepository,
                 IHashGenerator hashGenerator,
@@ -68,7 +69,7 @@ namespace SingleSignOn.Requests
 
                 return new Response<AuthorizeAccountResponse>
                 {
-                    Status = ResponseStatus.Unauthorized
+                    Status = ResponseStatus.Conflict
                 };
             }
         }

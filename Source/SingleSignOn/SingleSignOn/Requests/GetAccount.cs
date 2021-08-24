@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SingleSignOn.DataAccess.Repositories;
+using SingleSignOn.Validators;
 using WebApiBaseLibrary.Enums;
 using WebApiBaseLibrary.Responses;
 
@@ -28,6 +29,7 @@ namespace SingleSignOn.Requests
                 GetAccountRequest request,
                 CancellationToken cancellationToken)
             {
+
                 var account = await _accountRepository.GetAsync(request.AccountId);
 
                 if (account != null)

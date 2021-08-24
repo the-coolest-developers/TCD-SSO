@@ -12,6 +12,7 @@ using WebApiBaseLibrary.Controllers;
 
 namespace SingleSignOn.Controllers
 {
+    [ApiController]
     public class AccountController : BaseMediatorController
     {
         public AccountController(IMediator mediator) : base(mediator)

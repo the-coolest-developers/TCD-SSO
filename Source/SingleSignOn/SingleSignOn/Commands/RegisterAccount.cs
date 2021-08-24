@@ -40,11 +40,12 @@ namespace SingleSignOn.Commands
                 RegisterAccountCommand request,
                 CancellationToken cancellationToken)
             {
+
                 if (await _accountRepository.ExistsWithEmailAsync(request.Email))
                 {
                     return new Response<Unit>
                     {
-                        Status = ResponseStatus.Unauthorized
+                        Status = ResponseStatus.Conflict
                     };
                 }
 
