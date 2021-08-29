@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SingleSignOn.Commands;
-using SingleSignOn.Requests;
+using SingleSignOn.Commands.RegisterAccount;
+using SingleSignOn.Requests.AuthorizeAccount;
+using SingleSignOn.Requests.GetAccount;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
 using WebApiBaseLibrary.Controllers;
@@ -21,23 +22,23 @@ namespace SingleSignOn.Controllers
 
         [HttpPost("register")]
         public async Task<ActionResult<Unit>> Register(
-            [Required] [FromBody] RegisterAccount.RegisterAccountCommand registerAccountCommand)
+            [Required] [FromBody] RegisterAccountCommand registerAccountCommand)
         {
             return await ExecuteActionAsync(await Mediator.Send(registerAccountCommand));
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthorizeAccount.AuthorizeAccountResponse>> Login(
-            [Required] [FromBody] AuthorizeAccount.AuthorizeAccountRequest authorizeAccountRequest)
+        public async Task<ActionResult<AuthorizeAccountResponse>> Login(
+            [Required] [FromBody] AuthorizeAccountRequest authorizeAccountRequest)
             => await ExecuteActionAsync(await Mediator.Send(authorizeAccountRequest));
 
         [Authorize]
         [HttpGet("get")]
-        public async Task<ActionResult<GetAccount.GetAccountResponse>> GetAccount()
+        public async Task<ActionResult<GetAccountResponse>> GetAccount()
         {
             var userId = Guid.Parse(User.GetClaim(WebApiClaimTypes.AccountId).Value);
 
-            var getAccountRequest = new GetAccount.GetAccountRequest
+            var getAccountRequest = new GetAccountRequest
             {
                 AccountId = userId
             };

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SingleSignOn.Commands;
+using SingleSignOn.Commands.RegisterAccount;
 
 namespace SingleSignOn.Validators
 {
-    public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccount.RegisterAccountCommand>
+    public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccountCommand>
     {
         public RegisterAccountCommandValidator()
         {

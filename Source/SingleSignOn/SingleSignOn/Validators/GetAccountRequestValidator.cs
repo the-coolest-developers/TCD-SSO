@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SingleSignOn.Requests;
+using SingleSignOn.Requests.GetAccount;
 
 namespace SingleSignOn.Validators
 {
-    public class GetAccountRequestValidator : AbstractValidator<GetAccount.GetAccountRequest>
+    public class GetAccountRequestValidator : AbstractValidator<GetAccountRequest>
     {
         public GetAccountRequestValidator() 
         {
