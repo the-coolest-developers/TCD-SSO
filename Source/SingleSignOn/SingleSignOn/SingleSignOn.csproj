@@ -20,9 +20,9 @@
     
     <!-- TCD writen libs from own artifactory -->
     <ItemGroup>
-        <PackageReference Include="WebApiBaseLibrary" Version="1.0.3" />
-        <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.3" />
-        <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.3" />
+        <PackageReference Include="WebApiBaseLibrary" Version="1.0.5" />
+        <PackageReference Include="WebApiBaseLibrary.Authorization" Version="1.0.6" />
+        <PackageReference Include="WebApiBaseLibrary.Infrastructure" Version="1.0.7" />
     </ItemGroup>
 
     <ItemGroup>
