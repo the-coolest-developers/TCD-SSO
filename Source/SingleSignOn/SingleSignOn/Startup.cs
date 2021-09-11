@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SingleSignOn.Constants;
 using SingleSignOn.DataAccess.Context;
 using SingleSignOn.DataAccess.Repositories;
 using WebApiBaseLibrary.Authorization.Configurators;
@@ -33,9 +35,16 @@ namespace SingleSignOn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var databaseConnectionString = Configuration.GetConnectionString("PostgreSqlAws");
+            var databaseConnectionString =
+                Environment.GetEnvironmentVariable(EnvironmentVariables.DatabaseConnectionString);
 
-            services.AddDbContext<AccountContext>(options => options.UseNpgsql(databaseConnectionString));
+            services.AddControllers().AddFluentValidation(fv =>
+            {
+                fv.DisableDataAnnotationsValidation = true;
+                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+            });
+
+            services.AddDbContext<AccountContext>(options => options.UseNpgsql(databaseConnectionString!));
 
             services.AddScoped<IAccountRepository, AccountRepository>();
 
