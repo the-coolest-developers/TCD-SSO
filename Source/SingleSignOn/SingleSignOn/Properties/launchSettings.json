@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SingleSignOn": {
+    "Development": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

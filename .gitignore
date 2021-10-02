@@ -77,7 +77,6 @@ fabric.properties
 **/obj
 **/bin
 
-*.sln.DotSettings.user
 
 output
 
@@ -86,3 +85,5 @@ output
 *.v2
 *.suo
 .vs
+*.sln.DotSettings.user
+*.csproj.user
