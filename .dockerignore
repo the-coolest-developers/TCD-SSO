@@ -1,0 +1,6 @@
+.circleci
+.github
+CODEOWNERS
+README.md
+.git
+Resources/Docker/Dockerfile
