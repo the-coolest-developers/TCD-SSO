@@ -88,3 +88,4 @@ test.sh
 .vs
 *.sln.DotSettings.user
 *.csproj.user
+test.sh

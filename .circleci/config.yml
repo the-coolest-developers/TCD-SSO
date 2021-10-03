@@ -183,7 +183,7 @@ jobs:
              docker push $IMAGE_NAME:$AppVersion$VSUFFIX
 
 
-            
+
 version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
