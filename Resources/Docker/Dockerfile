@@ -33,18 +33,15 @@ COPY Resources/CERTS ./
 COPY Resources/Docker/start.sh ./start.sh
 
 
-
-FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as builder
+#####################################################
+#                      Restore                      #
+#####################################################
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as prepare
 ARG NUGET_REPO_URL
 ARG NUGET_REPO_USER
 ARG NUGET_REPO_PASS
 WORKDIR /usr/src/app
 COPY ./ ./
-
-#####################################################
-#                      Restore                      #
-#####################################################
-FROM builder as prepare
 RUN dotnet nuget add source $NUGET_REPO_URL/nuget/tcd-nuget/ \
             --name Artifactory \
             --username $NUGET_REPO_USER \

@@ -2,7 +2,7 @@
 executors:
   dotnet_executor:
     docker:
-      - image: mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13
+      - image: mcr.microsoft.com/dotnet/sdk:5.0
 
 jobs:
   build_code:
@@ -14,8 +14,6 @@ jobs:
       PROJECT_NAME: << parameters.project_name >>
     
     executor: dotnet_executor
-    # docker:
-    #   - image: mcr.microsoft.com/dotnet/sdk:5.0
     steps:
       - checkout
       - run:
@@ -46,7 +44,7 @@ jobs:
       #       - output/Build/
 
   pack_code:
-    parameters: # parameters are at the job level
+    parameters:
       project_name:
         type: string
         default: Dummy_project
@@ -55,10 +53,6 @@ jobs:
     executor: dotnet_executor
     steps:
       - checkout
-      # - attach_workspace:
-      #     # Must be absolute path or relative path from working_directory
-      #     at: /root/project/output/Build/
-      
       - run:
           name: Configure Nuget
           command: |
@@ -106,7 +100,7 @@ jobs:
             dotnet nuget push Nuget/ --source "${PROJECT_NAME}_Artifactory"
 
   build_image:
-    parameters: # parameters are at the job level
+    parameters:
       project_name:
         type: string
         default: Dummy_project
@@ -142,7 +136,7 @@ jobs:
             echo """export AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" $ProjectPath \
                                      | sed -E 's/<.{0,1}VersionPrefix>//g' \
                                      | sed -E 's/^[ \t]*//g')""" >> $BASH_ENV
-            [ -n "$VSUFFIX" ] && echo """export VSUFFIX="-$VSUFFIX" """" >> $BASH_ENV
+            [ -n "$VSUFFIX" ] && echo """export VSUFFIX="-$VSUFFIX" """ >> $BASH_ENV
 
       - run:
           name: Build Docker Image
@@ -153,20 +147,17 @@ jobs:
               --build-arg NUGET_REPO_URL=$ARTIFACTORY_URL \
               --build-arg NUGET_REPO_USER=$ARTIFACTORY_USER \
               --build-arg NUGET_REPO_PASS=$ARTIFACTORY_PASSWORD \
-
               --build-arg CERTIFICATE_PASSWORD=$CERTIFICATE_PASSWORD \
               --build-arg DATABASE_HOST=$DATABASE_HOST \
               --build-arg DATABASE_PORT=$DATABASE_PORT \
               --build-arg DATABASE_NAME=$DATABASE_NAME \
               --build-arg DATABASE_USERNAME=$DATABASE_USERNAME \
               --build-arg DATABASE_PASSWORD=$DATABASE_PASSWORD \
-
               --build-arg CORE_RABBITMQ_HOSTNAME=$CORE_RABBITMQ_HOSTNAME \
               --build-arg CORE_RABBITMQ_PORT=$CORE_RABBITMQ_PORT \
               --build-arg CORE_RABBITMQ_USERNAME=$CORE_RABBITMQ_USERNAME \
               --build-arg CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD \
               --build-arg CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST \
-
               --file ./Resources/Docker/Dockerfile .
       - run:
           name: Login to TCD Artifactory
@@ -192,40 +183,39 @@ orbs:
 workflows:
   BuildFlow:
     jobs:
-#      - build_code:
-#          name: Build Code
-#          context: Tokens
-#          project_name: SingleSignOn
-#          post-steps:
-#            - jira/notify:
-#                environment_type: development
+      - build_code:
+          name: Build Code
+          context: Tokens
+          project_name: SingleSignOn
+          post-steps:
+            - jira/notify:
+                environment_type: development
 
-#      - pack_code:
-#          name: Pack and push nugets to Artifactory
-#          requires:
-#            - "Build Code"
-#          filters:
-#            branches:
-#              only:
-#              - develop
-#              - release
-#          context: Tokens
-#          project_name: SingleSignOn
-#          post-steps:
-#            - jira/notify:
-#                environment_type: staging
-
-      - build_image:
-          name: Docker Image Build
-#          requires:
-#            - "Build Code"
-#            - "Pack and push nugets to Artifactory"
+      - pack_code:
+          name: Pack and push nugets to Artifactory
+          requires:
+            - "Build Code"
           filters:
             branches:
               only:
-                - develop
+              - develop
+              - release
+          context: Tokens
+          project_name: SingleSignOn
+          post-steps:
+            - jira/notify:
+                environment_type: development
+
+      - build_image:
+          name: Docker Image Build
+          requires:
+            - "Build Code"
+            - "Pack and push nugets to Artifactory"
+          filters:
+            branches:
+              only:
                 - release
-                - feature/RE-25
+#                - feature/RE-25
           context:
            - Tokens
            - Connection_Details
@@ -233,4 +223,4 @@ workflows:
           image_name: tcd_sso
           post-steps:
             - jira/notify:
-                environment_type: development
+                environment_type: production
