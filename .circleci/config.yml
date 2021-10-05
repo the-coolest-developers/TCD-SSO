@@ -76,7 +76,7 @@ jobs:
             then
               CPACK="Debug"
               VSUFFIX=$CIRCLE_BRANCH
-            elif [[ "$CIRCLE_BRANCH" == "release" ]];
+            elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
             then
               CPACK="Release"
             fi
@@ -121,29 +121,32 @@ jobs:
           name: Setup Environment variables
           command: |
             set -ex
-            if [[ "$CIRCLE_BRANCH" == "develop" ]];
-            then
-              VSUFFIX=$CIRCLE_BRANCH
-            elif [[ "$CIRCLE_BRANCH" == "release" ]];
-            then
-              VSUFFIX=""
-            elif [[ "$CIRCLE_BRANCH" == "feature/RE-25" ]];
-            then
-              VSUFFIX=develop
-            fi
 
             ProjectPath=./Source/SingleSignOn/SingleSignOn/SingleSignOn.csproj
-            echo """export AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" $ProjectPath \
-                                     | sed -E 's/<.{0,1}VersionPrefix>//g' \
-                                     | sed -E 's/^[ \t]*//g')""" >> $BASH_ENV
-            [ -n "$VSUFFIX" ] && echo """export VSUFFIX="-$VSUFFIX" """ >> $BASH_ENV
+            AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" $ProjectPath \
+                         | sed -E 's/<.{0,1}VersionPrefix>//g' \
+                         | sed -E 's/^[ \t]*//g')
+
+            if [[ "$CIRCLE_BRANCH" == "develop" ]];
+            then
+              VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
+            elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
+            then
+              VSUFFIX="$AppVersion-$(echo $CIRCLE_BRANCH | sed -s 's/release\///g')"
+            elif [[ "$CIRCLE_BRANCH" == "feature/RE-25" ]];
+            then
+              VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
+            fi
+
+            echo """export AppVersion=$AppVersion """ >> $BASH_ENV
+            echo """export VersionTag=$VSUFFIX """ >> $BASH_ENV
 
       - run:
           name: Build Docker Image
           command: |
             set -ex
 
-            docker build --tag $IMAGE_NAME:$AppVersion$VSUFFIX \
+            docker build --tag $IMAGE_NAME:$VersionTag \
               --build-arg NUGET_REPO_URL=$ARTIFACTORY_URL \
               --build-arg NUGET_REPO_USER=$ARTIFACTORY_USER \
               --build-arg NUGET_REPO_PASS=$ARTIFACTORY_PASSWORD \
@@ -171,7 +174,7 @@ jobs:
           command: |
             set -ex
 
-             docker push $IMAGE_NAME:$AppVersion$VSUFFIX
+             docker push $IMAGE_NAME:$VersionTag
 
 
 
@@ -199,7 +202,7 @@ workflows:
             branches:
               only:
               - develop
-              - release
+              - release/*
           context: Tokens
           project_name: SingleSignOn
           post-steps:
@@ -214,7 +217,7 @@ workflows:
           filters:
             branches:
               only:
-                - release
+                - release/*
 #                - feature/RE-25
           context:
            - Tokens
