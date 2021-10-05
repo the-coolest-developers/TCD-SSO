@@ -4,6 +4,7 @@ executors:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:5.0
 
+
 jobs:
   build_code:
     parameters: # parameters are at the job level
@@ -12,7 +13,7 @@ jobs:
         default: Dummy_project
     environment:
       PROJECT_NAME: << parameters.project_name >>
-    
+
     executor: dotnet_executor
     steps:
       - checkout
@@ -20,19 +21,19 @@ jobs:
           name: Configure Nuget
           command: |
             set -ex
-            
+
             dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/ \
             --name Artifactory \
             --username $ARTIFACTORY_USER \
             --password "$ARTIFACTORY_PASSWORD" \
-            --store-password-in-clear-text  
-      
+            --store-password-in-clear-text
+
       - run:
           working_directory: ./Source
           name: Run Build
           command: |
             set -ex
-            
+
             dotnet build --output /root/project/output/Build/ $PROJECT_NAME/$PROJECT_NAME.sln
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
       # - persist_to_workspace:
@@ -52,14 +53,22 @@ jobs:
       PROJECT_NAME: << parameters.project_name >>
     executor: dotnet_executor
     steps:
+#      - when:
+#          condition:
+#            or:
+#              - matches:
+#                  pattern: "release/.*"
+#                  value: << pipeline.git.branch >>
+#              - equal: [ "develop", << pipeline.git.branch >> ]
+#          steps:
       - checkout
       - run:
           name: Configure Nuget
           command: |
             set -ex
-            
+
             echo "I am on branch [ $CIRCLE_BRANCH ] now"
-            
+
             dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/ \
             --name Artifactory \
             --username $ARTIFACTORY_USER \
@@ -71,7 +80,7 @@ jobs:
           name: Pack Nuget
           command: |
             set -ex
-            
+
             if [[ "$CIRCLE_BRANCH" == "develop" ]];
             then
               CPACK="Debug"
@@ -80,23 +89,24 @@ jobs:
             then
               CPACK="Release"
             fi
-            
+
             dotnet pack -c $CPACK \
             --version-suffix "$VSUFFIX" \
             -o /root/project/output/Nuget \
             $PROJECT_NAME/$PROJECT_NAME.sln
-      
+
       - run:
           working_directory: ./output/
           name: Push Nugets
           command: |
             set -ex
+
             dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/$PROJECT_NAME/$CIRCLE_BRANCH \
             --name "${PROJECT_NAME}_Artifactory" \
             --username $ARTIFACTORY_USER \
             --password "$ARTIFACTORY_PASSWORD" \
-            --store-password-in-clear-text   
-      
+            --store-password-in-clear-text
+
             dotnet nuget push Nuget/ --source "${PROJECT_NAME}_Artifactory"
 
   build_image:
@@ -114,9 +124,16 @@ jobs:
     docker:
       - image: circleci/golang:1.15
     steps:
+#      - when:
+#          condition:
+#            or:
+#              - matches:
+#                  pattern: "release/.*"
+#                  value: << pipeline.git.branch >>
+#          steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.6
       - run:
           name: Setup Environment variables
           command: |
@@ -136,6 +153,8 @@ jobs:
             elif [[ "$CIRCLE_BRANCH" == "feature/RE-25" ]];
             then
               VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
+            else
+              exit 0
             fi
 
             echo """export AppVersion=$AppVersion """ >> $BASH_ENV
@@ -184,7 +203,20 @@ orbs:
   docker: circleci/docker@1.6.0
 
 workflows:
-  BuildFlow:
+  version: 2
+  PRBuildFlow:
+    when: true
+    jobs:
+      - build_code:
+          name: Build Code
+          context: Tokens
+          project_name: SingleSignOn
+          post-steps:
+            - jira/notify:
+                environment_type: development
+  DevelopFlow:
+    when:
+      equal: [develop, << pipeline.git.branch >>]
     jobs:
       - build_code:
           name: Build Code
@@ -198,11 +230,29 @@ workflows:
           name: Pack and push nugets to Artifactory
           requires:
             - "Build Code"
-          filters:
-            branches:
-              only:
-              - develop
-              - release/*
+          context: Tokens
+          project_name: SingleSignOn
+          post-steps:
+            - jira/notify:
+                environment_type: development
+  ReleaseFlow:
+    when:
+      matches:
+       pattern: "release/.*"
+       value: << pipeline.git.branch >>
+    jobs:
+      - build_code:
+          name: Code build
+          context: Tokens
+          project_name: SingleSignOn
+          post-steps:
+            - jira/notify:
+                environment_type: development
+
+      - pack_code:
+          name: Pack and push nugets to Artifactory
+          requires:
+            - "Code build"
           context: Tokens
           project_name: SingleSignOn
           post-steps:
@@ -212,13 +262,8 @@ workflows:
       - build_image:
           name: Docker Image Build
           requires:
-            - "Build Code"
+            - "Code build"
             - "Pack and push nugets to Artifactory"
-          filters:
-            branches:
-              only:
-                - release/*
-#                - feature/RE-25
           context:
            - Tokens
            - Connection_Details
