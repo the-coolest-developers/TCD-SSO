@@ -4,6 +4,7 @@ executors:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:5.0
 
+
 jobs:
   build_code:
     parameters: # parameters are at the job level
@@ -12,7 +13,7 @@ jobs:
         default: Dummy_project
     environment:
       PROJECT_NAME: << parameters.project_name >>
-    
+
     executor: dotnet_executor
     steps:
       - checkout
@@ -20,19 +21,19 @@ jobs:
           name: Configure Nuget
           command: |
             set -ex
-            
+
             dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/ \
             --name Artifactory \
             --username $ARTIFACTORY_USER \
             --password "$ARTIFACTORY_PASSWORD" \
-            --store-password-in-clear-text  
-      
+            --store-password-in-clear-text
+
       - run:
           working_directory: ./Source
           name: Run Build
           command: |
             set -ex
-            
+
             dotnet build --output /root/project/output/Build/ $PROJECT_NAME/$PROJECT_NAME.sln
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
       # - persist_to_workspace:
@@ -52,52 +53,61 @@ jobs:
       PROJECT_NAME: << parameters.project_name >>
     executor: dotnet_executor
     steps:
-      - checkout
-      - run:
-          name: Configure Nuget
-          command: |
-            set -ex
-            
-            echo "I am on branch [ $CIRCLE_BRANCH ] now"
-            
-            dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/ \
-            --name Artifactory \
-            --username $ARTIFACTORY_USER \
-            --password "$ARTIFACTORY_PASSWORD" \
-            --store-password-in-clear-text
+      - when:
+          condition:
+            or:
+              - matches:
+                  pattern: "release/.*"
+                  value: << pipeline.git.branch >>
+              - equal: [ "develop", << pipeline.git.branch >> ]
+          steps:
+            - checkout
+            - run:
+                name: Configure Nuget
+                command: |
+                  set -ex
 
-      - run:
-          working_directory: ./Source
-          name: Pack Nuget
-          command: |
-            set -ex
-            
-            if [[ "$CIRCLE_BRANCH" == "develop" ]];
-            then
-              CPACK="Debug"
-              VSUFFIX=$CIRCLE_BRANCH
-            elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
-            then
-              CPACK="Release"
-            fi
-            
-            dotnet pack -c $CPACK \
-            --version-suffix "$VSUFFIX" \
-            -o /root/project/output/Nuget \
-            $PROJECT_NAME/$PROJECT_NAME.sln
-      
-      - run:
-          working_directory: ./output/
-          name: Push Nugets
-          command: |
-            set -ex
-            dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/$PROJECT_NAME/$CIRCLE_BRANCH \
-            --name "${PROJECT_NAME}_Artifactory" \
-            --username $ARTIFACTORY_USER \
-            --password "$ARTIFACTORY_PASSWORD" \
-            --store-password-in-clear-text   
-      
-            dotnet nuget push Nuget/ --source "${PROJECT_NAME}_Artifactory"
+                  echo "I am on branch [ $CIRCLE_BRANCH ] now"
+
+                  dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/ \
+                  --name Artifactory \
+                  --username $ARTIFACTORY_USER \
+                  --password "$ARTIFACTORY_PASSWORD" \
+                  --store-password-in-clear-text
+
+            - run:
+                working_directory: ./Source
+                name: Pack Nuget
+                command: |
+                  set -ex
+
+                  if [[ "$CIRCLE_BRANCH" == "develop" ]];
+                  then
+                    CPACK="Debug"
+                    VSUFFIX=$CIRCLE_BRANCH
+                  elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
+                  then
+                    CPACK="Release"
+                  fi
+
+                  dotnet pack -c $CPACK \
+                  --version-suffix "$VSUFFIX" \
+                  -o /root/project/output/Nuget \
+                  $PROJECT_NAME/$PROJECT_NAME.sln
+
+            - run:
+                working_directory: ./output/
+                name: Push Nugets
+                command: |
+                  set -ex
+
+                  dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/$PROJECT_NAME/$CIRCLE_BRANCH \
+                  --name "${PROJECT_NAME}_Artifactory" \
+                  --username $ARTIFACTORY_USER \
+                  --password "$ARTIFACTORY_PASSWORD" \
+                  --store-password-in-clear-text
+
+                  dotnet nuget push Nuget/ --source "${PROJECT_NAME}_Artifactory"
 
   build_image:
     parameters:
@@ -114,67 +124,76 @@ jobs:
     docker:
       - image: circleci/golang:1.15
     steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.7
-      - run:
-          name: Setup Environment variables
-          command: |
-            set -ex
+      - when:
+          condition:
+            or:
+              - matches:
+                  pattern: "release/.*"
+                  value: << pipeline.git.branch >>
+          steps:
+            - checkout
+            - setup_remote_docker:
+                version: 20.10.6
+            - run:
+                name: Setup Environment variables
+                command: |
+                  set -ex
 
-            ProjectPath=./Source/SingleSignOn/SingleSignOn/SingleSignOn.csproj
-            AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" $ProjectPath \
-                         | sed -E 's/<.{0,1}VersionPrefix>//g' \
-                         | sed -E 's/^[ \t]*//g')
+                  ProjectPath=./Source/SingleSignOn/SingleSignOn/SingleSignOn.csproj
+                  AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" $ProjectPath \
+                               | sed -E 's/<.{0,1}VersionPrefix>//g' \
+                               | sed -E 's/^[ \t]*//g')
 
-            if [[ "$CIRCLE_BRANCH" == "develop" ]];
-            then
-              VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
-            elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
-            then
-              VSUFFIX="$AppVersion-$(echo $CIRCLE_BRANCH | sed -s 's/release\///g')"
-            elif [[ "$CIRCLE_BRANCH" == "feature/RE-25" ]];
-            then
-              VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
-            fi
+                  if [[ "$CIRCLE_BRANCH" == "develop" ]];
+                  then
+                    VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
+                  elif [[ "$CIRCLE_BRANCH" == "release/"* ]];
+                  then
+                    VSUFFIX="$AppVersion-$(echo $CIRCLE_BRANCH | sed -s 's/release\///g')"
+                  elif [[ "$CIRCLE_BRANCH" == "feature/RE-25" ]];
+                  then
+                    VSUFFIX="$AppVersion-$CIRCLE_BRANCH"
+                  else
+                    exit 0
+                  fi
 
-            echo """export AppVersion=$AppVersion """ >> $BASH_ENV
-            echo """export VersionTag=$VSUFFIX """ >> $BASH_ENV
+                  echo """export AppVersion=$AppVersion """ >> $BASH_ENV
+                  echo """export VersionTag=$VSUFFIX """ >> $BASH_ENV
 
-      - run:
-          name: Build Docker Image
-          command: |
-            set -ex
+            - run:
+                name: Build Docker Image
+                command: |
+                  set -ex
 
-            docker build --tag $IMAGE_NAME:$VersionTag \
-              --build-arg NUGET_REPO_URL=$ARTIFACTORY_URL \
-              --build-arg NUGET_REPO_USER=$ARTIFACTORY_USER \
-              --build-arg NUGET_REPO_PASS=$ARTIFACTORY_PASSWORD \
-              --build-arg CERTIFICATE_PASSWORD=$CERTIFICATE_PASSWORD \
-              --build-arg DATABASE_HOST=$DATABASE_HOST \
-              --build-arg DATABASE_PORT=$DATABASE_PORT \
-              --build-arg DATABASE_NAME=$DATABASE_NAME \
-              --build-arg DATABASE_USERNAME=$DATABASE_USERNAME \
-              --build-arg DATABASE_PASSWORD=$DATABASE_PASSWORD \
-              --build-arg CORE_RABBITMQ_HOSTNAME=$CORE_RABBITMQ_HOSTNAME \
-              --build-arg CORE_RABBITMQ_PORT=$CORE_RABBITMQ_PORT \
-              --build-arg CORE_RABBITMQ_USERNAME=$CORE_RABBITMQ_USERNAME \
-              --build-arg CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD \
-              --build-arg CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST \
-              --file ./Resources/Docker/Dockerfile .
-      - run:
-          name: Login to TCD Artifactory
-          command: |
-            set -ex
+                  docker build --tag $IMAGE_NAME:$VersionTag \
+                    --build-arg NUGET_REPO_URL=$ARTIFACTORY_URL \
+                    --build-arg NUGET_REPO_USER=$ARTIFACTORY_USER \
+                    --build-arg NUGET_REPO_PASS=$ARTIFACTORY_PASSWORD \
+                    --build-arg CERTIFICATE_PASSWORD=$CERTIFICATE_PASSWORD \
+                    --build-arg DATABASE_HOST=$DATABASE_HOST \
+                    --build-arg DATABASE_PORT=$DATABASE_PORT \
+                    --build-arg DATABASE_NAME=$DATABASE_NAME \
+                    --build-arg DATABASE_USERNAME=$DATABASE_USERNAME \
+                    --build-arg DATABASE_PASSWORD=$DATABASE_PASSWORD \
+                    --build-arg CORE_RABBITMQ_HOSTNAME=$CORE_RABBITMQ_HOSTNAME \
+                    --build-arg CORE_RABBITMQ_PORT=$CORE_RABBITMQ_PORT \
+                    --build-arg CORE_RABBITMQ_USERNAME=$CORE_RABBITMQ_USERNAME \
+                    --build-arg CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD \
+                    --build-arg CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST \
+                    --file ./Resources/Docker/Dockerfile .
+            - run:
+                name: Login to TCD Artifactory
+                command: |
+                  set -ex
 
-            echo $ARTIFACTORY_PASSWORD | docker login -u $ARTIFACTORY_USER --password-stdin tcd.jfrog.io
+                  echo $ARTIFACTORY_PASSWORD | docker login -u $ARTIFACTORY_USER --password-stdin tcd.jfrog.io
 
-      - run:
-          name: Push Docker Image
-          command: |
-            set -ex
+            - run:
+                name: Push Docker Image
+                command: |
+                  set -ex
 
-             docker push $IMAGE_NAME:$VersionTag
+                   docker push $IMAGE_NAME:$VersionTag
 
 
 
@@ -184,6 +203,7 @@ orbs:
   docker: circleci/docker@1.6.0
 
 workflows:
+  version: 2
   BuildFlow:
     jobs:
       - build_code:
@@ -198,11 +218,6 @@ workflows:
           name: Pack and push nugets to Artifactory
           requires:
             - "Build Code"
-          filters:
-            branches:
-              only:
-              - develop
-              - release/*
           context: Tokens
           project_name: SingleSignOn
           post-steps:
@@ -214,11 +229,6 @@ workflows:
           requires:
             - "Build Code"
             - "Pack and push nugets to Artifactory"
-          filters:
-            branches:
-              only:
-                - release/*
-#                - feature/RE-25
           context:
            - Tokens
            - Connection_Details
