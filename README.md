@@ -5,7 +5,7 @@
 
 | develop | release |
 | :-----: | :-----: |
-| [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop) | [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release) |
+| [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop) | [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release/2.1.x) |
 
 ## Conventions
 1) The PR title contains _**[TSO-1234]**_ as a prefix
