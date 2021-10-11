@@ -3,6 +3,12 @@
 #####################################################
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine3.13 as final
 
+WORKDIR /app
+RUN mkdir CERTS
+COPY Resources/CERTS/TCD_Certificate.pfx ./CERTS/TCD_Certificate.pfx
+COPY Resources/Docker/start.sh ./start.sh
+EXPOSE 5005 5004
+
 # Database
 ARG CERTIFICATE_PASSWORD
 ARG DATABASE_HOST
@@ -15,7 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/CERTS/TCD_Certificate.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=$CERTIFICATE_PASSWORD
 
-# RabbitMQ 
+# RabbitMQ
 ARG CORE_RABBITMQ_HOSTNAME
 ARG CORE_RABBITMQ_PORT
 ARG CORE_RABBITMQ_USERNAME
@@ -27,21 +33,18 @@ ENV CORE_RABBITMQ_USERNAME=$CORE_RABBITMQ_USERNAME
 ENV CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD
 ENV CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST
 
-WORKDIR /app
-#RUN mkdir CERTS
-COPY Resources/CERTS ./
-COPY Resources/Docker/start.sh ./start.sh
 
-
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as build-test
+WORKDIR /usr/src/app
+COPY ./ ./
 #####################################################
 #                      Restore                      #
 #####################################################
-FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as prepare
+FROM build-test as prepare
 ARG NUGET_REPO_URL
 ARG NUGET_REPO_USER
 ARG NUGET_REPO_PASS
-WORKDIR /usr/src/app
-COPY ./ ./
+
 RUN dotnet nuget add source $NUGET_REPO_URL/nuget/tcd-nuget/ \
             --name Artifactory \
             --username $NUGET_REPO_USER \
