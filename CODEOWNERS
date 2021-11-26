@@ -1,1 +1,7 @@
-* @ArtiomCiobanu @Cute-Monster 
+[Application_Code]
+Sources/ @ArtiomCiobanu
+Database/ @ArtiomCiobanu
+^* @ArtiomCiobanu @Cute-Monster
+
+[CI/CD]
+Resources/ @Cute-Monster
