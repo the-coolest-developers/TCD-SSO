@@ -37,6 +37,8 @@ ENV CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as build-test
 WORKDIR /usr/src/app
 COPY ./ ./
+
+
 #####################################################
 #                      Restore                      #
 #####################################################

@@ -4,3 +4,4 @@ CODEOWNERS
 README.md
 .git
 Resources/Docker/Dockerfile
+Resources/CI
