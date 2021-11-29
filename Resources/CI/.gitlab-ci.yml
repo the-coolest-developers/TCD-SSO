@@ -2,15 +2,26 @@
   image:
     name: mcr.microsoft.com/dotnet/sdk:5.0
   cache:
-    key: $CI_COMMIT_REF_SLUG
+    key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}"
     paths:
       - .nuget
+  before_script:
+    - >-
+      [[ -f "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config" ]] &&
+      cp -f "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config" "${HOME}/.nuget/NuGet/NuGet.Config"
+  after_script:
+    - mkdir -p "${CI_PROJECT_DIR}/.nuget/NuGet"
+    - cp -f "${HOME}/.nuget/NuGet/NuGet.Config"  "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config"
 
 .docker_image_runner: &docker_image_runner
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
 
+.dev_changes: &dev_changes
+  changes:
+    - Source/*
+    - Resources/Docker/*
 
 
 .protected_branch_rules:
@@ -18,9 +29,11 @@
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       variables:
         VSUFFIX: "$CI_COMMIT_BRANCH"
+      <<: *dev_changes
     - if: $CI_COMMIT_REF_NAME =~ /release/
       variables:
         VSUFFIX: "$CI_COMMIT_BRANCH"
+      <<: *dev_changes
 
 stages:
   - build
@@ -35,15 +48,13 @@ prepare_runner:
   <<: *code_image
   script:
     - >-
-      dotnet nuget add source $ARTIFACTORY_URL/nuget/tcd-nuget/
+      dotnet nuget add source "${ARTIFACTORY_URL}/nuget/tcd-nuget/"
       --name Artifactory
-      --username $ARTIFACTORY_USER
-      --password "$ARTIFACTORY_PASSWORD"
+      --username "${ARTIFACTORY_USER}"
+      --password "${ARTIFACTORY_PASSWORD}"
       --store-password-in-clear-text
     - >-
       OUTPUT_BASE_PATH="${CI_PROJECT_DIR}/output"
-    - mkdir -p "${CI_PROJECT_DIR}/.nuget/NuGet"
-    - cat ${HOME}/.nuget/NuGet/NuGet.Config >> ${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config
 
 
 build_code:
@@ -54,11 +65,9 @@ build_code:
   rules:
     - !reference [.protected_branch_rules, rules]
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  before_script:
-    - mv .nuget/NuGet/NuGet.Config ${HOME}/.nuget/NuGet/NuGet.Config
   script:
     - dotnet nuget list source
-    - dotnet build --output "${OUTPUT_BASE_PATH}/Build/" "${CI_PROJECT_DIR}/Source/$PROJECT_NAME/$PROJECT_NAME.sln"
+    - dotnet build --output "${OUTPUT_BASE_PATH}/Build/" "${CI_PROJECT_DIR}/Source/${PROJECT_NAME}/${PROJECT_NAME}.sln"
 
 
 build_image:
@@ -83,10 +92,6 @@ build_image:
       VersionTag="${AppVersion}-${VSUFFIX//\//-}"
     - >-
       echo "[ ${VersionTag} ]"
-    - >-
-      cat ${CI_PROJECT_DIR}/Resources/Docker/Dockerfile
-    - >-
-      echo -e "\\n============================================\\n"
     - >-
       /kaniko/executor
       --destination "${IMAGE_NAME}:${VersionTag}"
