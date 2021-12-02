@@ -1,102 +1,18 @@
-.code_image_runner: &code_image
-  image:
-    name: mcr.microsoft.com/dotnet/sdk:5.0
-  cache:
-    key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}"
-    paths:
-      - .nuget
-  before_script:
-    - >-
-      [[ -f "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config" ]] &&
-      cp -f "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config" "${HOME}/.nuget/NuGet/NuGet.Config"
-  after_script:
-    - mkdir -p "${CI_PROJECT_DIR}/.nuget/NuGet"
-    - cp -f "${HOME}/.nuget/NuGet/NuGet.Config"  "${CI_PROJECT_DIR}/.nuget/NuGet/NuGet.Config"
+include:
+  - project: "the-coolest-developers/devops/shared-pilelines"
+    ref: v1.0.0
+    file: "shared.yml"
 
-.docker_image_runner: &docker_image_runner
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [ "" ]
+variables:
+  # .Net related vars
+  SOLUTION_PATH: "${CI_PROJECT_DIR}/Source/${PROJECT_NAME}/${PROJECT_NAME}.sln"
 
-.dev_changes: &dev_changes
-  changes:
-    - Source/*
-    - Resources/Docker/*
-
-
-.protected_branch_rules:
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-      variables:
-        VSUFFIX: "$CI_COMMIT_BRANCH"
-      <<: *dev_changes
-    - if: $CI_COMMIT_REF_NAME =~ /release/
-      variables:
-        VSUFFIX: "$CI_COMMIT_BRANCH"
-      <<: *dev_changes
-
-stages:
-  - build
-  - pack_nugets
-  - docker_image
-
-prepare_runner:
-  stage: .pre
-  rules:
-    - !reference [ .protected_branch_rules, rules ]
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  <<: *code_image
-  script:
-    - >-
-      dotnet nuget add source "${ARTIFACTORY_URL}/nuget/tcd-nuget/"
-      --name Artifactory
-      --username "${ARTIFACTORY_USER}"
-      --password "${ARTIFACTORY_PASSWORD}"
-      --store-password-in-clear-text
-    - >-
-      OUTPUT_BASE_PATH="${CI_PROJECT_DIR}/output"
-
-
-build_code:
-  stage: build
-  <<: *code_image
-  needs:
-    - prepare_runner
-  rules:
-    - !reference [.protected_branch_rules, rules]
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  script:
-    - dotnet nuget list source
-    - dotnet build --output "${OUTPUT_BASE_PATH}/Build/" "${CI_PROJECT_DIR}/Source/${PROJECT_NAME}/${PROJECT_NAME}.sln"
-
-
-build_image:
-  stage: docker_image
-  needs:
-    - build_code
-  <<: *docker_image_runner
-  rules:
-    - !reference [.protected_branch_rules, rules]
-  variables:
-    IMAGE_NAME: "tcd.jfrog.io/tcd-docker/tcd_sso"
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"${ARTIFACTORY_DOCKER_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${ARTIFACTORY_USER}" "${ARTIFACTORY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - >-
-      ProjectPath="${CI_PROJECT_DIR}/Source/${PROJECT_NAME}/${PROJECT_NAME}/${PROJECT_NAME}.csproj"
-    - >-
-      AppVersion=$(grep "<VersionPrefix>.*</VersionPrefix>" ${ProjectPath}
-      | sed -E 's/<.{0,1}VersionPrefix>//g'
-      | sed -E 's/^[ \t]*//g')
-    - >-
-      VersionTag="${AppVersion}-${VSUFFIX//\//-}"
-    - >-
-      echo "[ ${VersionTag} ]"
-    - >-
-      /kaniko/executor
-      --destination "${IMAGE_NAME}:${VersionTag}"
-      --dockerfile "${CI_PROJECT_DIR}/Resources/Docker/Dockerfile"
-      --context "${CI_PROJECT_DIR}"
+  # Docker related vars
+  CSPROJ_PATH: "${CI_PROJECT_DIR}/Source/${PROJECT_NAME}/${PROJECT_NAME}/${PROJECT_NAME}.csproj"
+  IMAGE_NAME: "tcd.jfrog.io/tcd-docker/tcd_sso"
+  DOCKERFILE_PATH: "${CI_PROJECT_DIR}/Resources/Docker/Dockerfile"
+  BUILD_CONTEXT: "${CI_PROJECT_DIR}"
+  IMAGE_BUILD_ARGS: '
       --build-arg NUGET_REPO_URL="${ARTIFACTORY_URL}"
       --build-arg NUGET_REPO_USER="${ARTIFACTORY_USER}"
       --build-arg NUGET_REPO_PASS="${ARTIFACTORY_PASSWORD}"
@@ -111,3 +27,16 @@ build_image:
       --build-arg CORE_RABBITMQ_USERNAME="<Username_Here>"
       --build-arg CORE_RABBITMQ_PASSWORD="<Password_Here>"
       --build-arg CORE_RABBITMQ_VIRTUALHOST="${CORE_RABBITMQ_VIRTUALHOST}"
+      '
+
+stages:
+  - build_code_base
+  - docker
+
+build_source_code:
+  stage: build_code_base
+  extends: .build
+
+build_image:
+  stage: docker
+  extends: .docker_image_build
