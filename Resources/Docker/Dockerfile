@@ -1,12 +1,11 @@
 #####################################################
 #                      Prepare                      #
 #####################################################
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine3.13 as final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine3.14 as final
 
 WORKDIR /app
 RUN mkdir CERTS
 COPY Resources/CERTS/TCD_Certificate.pfx ./CERTS/TCD_Certificate.pfx
-COPY Resources/Docker/start.sh ./start.sh
 EXPOSE 5005 5004
 
 # Database
@@ -34,7 +33,7 @@ ENV CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD
 ENV CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST
 
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13 as build-test
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine3.14 as build-test
 WORKDIR /usr/src/app
 COPY ./ ./
 
@@ -47,13 +46,12 @@ ARG NUGET_REPO_URL
 ARG NUGET_REPO_USER
 ARG NUGET_REPO_PASS
 
-RUN dotnet nuget add source $NUGET_REPO_URL/nuget/tcd-nuget/ \
+RUN dotnet nuget add source "$NUGET_REPO_URL/nuget/tcd-nuget/" \
             --name Artifactory \
-            --username $NUGET_REPO_USER \
+            --username "$NUGET_REPO_USER" \
             --password "$NUGET_REPO_PASS" \
             --store-password-in-clear-text
 
-# RUN dotnet nuget list source && sleep 15
 RUN dotnet restore Source/SingleSignOn/SingleSignOn.sln
 
 #####################################################
@@ -73,4 +71,4 @@ RUN dotnet publish Source/SingleSignOn/SingleSignOn.sln --no-build -c Release -o
 ######################################################
 FROM final
 COPY --from=published /app/dotnet/ .
-ENTRYPOINT sh start.sh
+ENTRYPOINT dotnet SingleSignOn.dll

@@ -3,9 +3,9 @@
 
 ### CircleCi builds
 
-| develop | release |
-| :-----: | :-----: |
-| [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/develop) | [![CircleCI](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release.svg?style=svg)](https://circleci.com/gh/the-coolest-developers/TCD-SSO/tree/release) |
+|                                                                                  develop                                                                                  |                                                                                       release                                                                                        |
+|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [![pipeline status](https://gitlab.com/the-coolest-developers/TCD-SSO/badges/develop/pipeline.svg)](https://gitlab.com/the-coolest-developers/TCD-SSO/-/commits/develop)  | [![pipeline status](https://gitlab.com/the-coolest-developers/TCD-SSO/badges/release/2.1.x/pipeline.svg)](https://gitlab.com/the-coolest-developers/TCD-SSO/-/commits/release/2.1.x) |
 
 ## Conventions
 1) The PR title contains _**[TSO-1234]**_ as a prefix

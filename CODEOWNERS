@@ -1,9 +1,12 @@
 [Application_Code]
-Sources/ @ArtiomCiobanu
-Database/ @ArtiomCiobanu
+Sources/ @ArtiomCiobanu @Cute-Monster
+Database/ @ArtiomCiobanu @Cute-Monster
+Resources/CERTS/ @ArtiomCiobanu @Cute-Monster
 
 [CI/CD]
 Resources/ @Cute-Monster
+.github/ @Cute-Monster
+CODEOWNERS @Cute-Monster
 
 [All other stuff]
 .gitignore @ArtiomCiobanu @Cute-Monster
