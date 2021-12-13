@@ -1,6 +1,6 @@
 include:
   - project: "the-coolest-developers/devops/shared-pilelines"
-    ref: v1.0.0
+    ref: v1.0.4
     file: "shared.yml"
 
 variables:
