@@ -1,6 +1,6 @@
 include:
   - project: "the-coolest-developers/devops/shared-pilelines"
-    ref: v1.0.1
+    ref: develop
     file: "shared.yml"
 
 variables:
@@ -27,6 +27,7 @@ variables:
       --build-arg CORE_RABBITMQ_USERNAME="<Username_Here>"
       --build-arg CORE_RABBITMQ_PASSWORD="<Password_Here>"
       --build-arg CORE_RABBITMQ_VIRTUALHOST="${CORE_RABBITMQ_VIRTUALHOST}"
+      --build-arg ASPNETCORE_ENVIRONMENT=${CI_ENV_NAME}
       '
 
 stages:

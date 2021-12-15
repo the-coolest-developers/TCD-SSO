@@ -3,24 +3,22 @@
 #####################################################
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine3.14 as final
 
-WORKDIR /app
-RUN mkdir CERTS
-COPY Resources/CERTS/TCD_Certificate.pfx ./CERTS/TCD_Certificate.pfx
-EXPOSE 5005 5004
-
-# Database
-ARG CERTIFICATE_PASSWORD
+# Database connection vars
 ARG DATABASE_HOST
 ARG DATABASE_PORT
 ARG DATABASE_NAME
 ARG DATABASE_USERNAME
 ARG DATABASE_PASSWORD
 ENV SSO_DB_CONNECTION_STRING="Server=$DATABASE_HOST; Port=$DATABASE_PORT; Database=$DATABASE_NAME; Username=$DATABASE_USERNAME; password=$DATABASE_PASSWORD;"
-ENV ASPNETCORE_ENVIRONMENT=Development
+
+# ASPnet vars
+ARG CERTIFICATE_PASSWORD
+ARG ASPNETCORE_ENVIRONMENT
+ENV ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/CERTS/TCD_Certificate.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=$CERTIFICATE_PASSWORD
 
-# RabbitMQ
+# RabbitMQ vars
 ARG CORE_RABBITMQ_HOSTNAME
 ARG CORE_RABBITMQ_PORT
 ARG CORE_RABBITMQ_USERNAME
@@ -32,6 +30,12 @@ ENV CORE_RABBITMQ_USERNAME=$CORE_RABBITMQ_USERNAME
 ENV CORE_RABBITMQ_PASSWORD=$CORE_RABBITMQ_PASSWORD
 ENV CORE_RABBITMQ_VIRTUALHOST=$CORE_RABBITMQ_VIRTUALHOST
 
+WORKDIR /app
+RUN mkdir CERTS
+COPY Resources/CERTS/TCD_Certificate.pfx ./CERTS/TCD_Certificate.pfx
+EXPOSE 5005 5004
+
+# ------------------------------------------------- #
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine3.14 as build-test
 WORKDIR /usr/src/app
