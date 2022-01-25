@@ -1,7 +1,7 @@
 # TCD-SSO
 ### The Identity server for The-Coolest-Developers account.
 
-### CircleCi builds
+### GitlabCI builds
 
 |                                                                                  develop                                                                                  |                                                                                       release                                                                                        |
 |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
@@ -11,3 +11,4 @@
 1) The PR title contains _**[TSO-1234]**_ as a prefix
 2) The branch name contains **_feature/TSO-1234_** or **_bugfix/TSO-1234_**
 3) Each commit contains _**[TSO-1234]**_ as a prefix
+

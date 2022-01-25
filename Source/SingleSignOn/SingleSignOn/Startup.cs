@@ -16,7 +16,7 @@ using WebApiBaseLibrary.Authorization.Configurators;
 using WebApiBaseLibrary.Authorization.Constants;
 using WebApiBaseLibrary.Authorization.Extensions;
 using WebApiBaseLibrary.Authorization.Generators;
-using WebApiBaseLibrary.Infrastructure.Extensions;
+using WebApiBaseLibrary.Infrastructure.Configuration;
 using WebApiBaseLibrary.Infrastructure.Generators;
 
 namespace SingleSignOn
@@ -35,8 +35,7 @@ namespace SingleSignOn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var databaseConnectionString =
-                Environment.GetEnvironmentVariable(EnvironmentVariables.DatabaseConnectionString);
+            var databaseConnectionString = Configuration.GetConnectionString("SSO_DB_CONNECTION_STRING");
 
             services.AddControllers().AddFluentValidation(fv =>
             {
@@ -48,8 +47,8 @@ namespace SingleSignOn
 
             services.AddScoped<IAccountRepository, AccountRepository>();
 
-            services.AddSingletonHashConfiguration(Configuration);
-            services.AddScoped<IHashGenerator, HashGenerator>();
+            var hashConfiguration = Configuration.GetSection("HashConfiguration").Get<HashConfiguration>();
+            services.AddScoped<IHashGenerator, HashGenerator>(s => new HashGenerator(hashConfiguration));
 
             services.AddSingletonJwtConfiguration(Configuration);
             services.AddSingleton<IJwtConfigurator, JwtConfigurator>();
@@ -96,7 +95,7 @@ namespace SingleSignOn
 
                 options.AddSecurityRequirement(requirement);
 
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "SingleSignOn", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "SingleSignOn", Version = "v1" });
             });
 
             services.AddMediatR(typeof(Startup));
