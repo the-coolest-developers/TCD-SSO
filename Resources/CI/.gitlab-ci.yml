@@ -12,24 +12,22 @@ variables:
   IMAGE_NAME: "tcd.jfrog.io/tcd-docker/tcd_sso"
   DOCKERFILE_PATH: "${CI_PROJECT_DIR}/Resources/Docker/Dockerfile"
   BUILD_CONTEXT: "${CI_PROJECT_DIR}"
-  IMAGE_BUILD_ARGS: '
-      --build-arg NUGET_REPO_URL="${ARTIFACTORY_URL}"
-      --build-arg NUGET_REPO_USER="${ARTIFACTORY_USER}"
-      --build-arg NUGET_REPO_PASS="${ARTIFACTORY_PASSWORD}"
-      --build-arg CERTIFICATE_PASSWORD="${CERTIFICATE_PASSWORD}"
-      --build-arg DATABASE_HOST="database"
-      --build-arg DATABASE_PORT="${DATABASE_PORT}"
-      --build-arg DATABASE_NAME="${DATABASE_NAME}"
-      --build-arg DATABASE_USERNAME="<Username_Here>"
-      --build-arg DATABASE_PASSWORD="<Password_Here>"
-      --build-arg CORE_RABBITMQ_HOSTNAME="rabbit"
-      --build-arg CORE_RABBITMQ_PORT="${CORE_RABBITMQ_PORT}"
-      --build-arg CORE_RABBITMQ_USERNAME="<Username_Here>"
-      --build-arg CORE_RABBITMQ_PASSWORD="<Password_Here>"
-      --build-arg CORE_RABBITMQ_VIRTUALHOST="${CORE_RABBITMQ_VIRTUALHOST}"
-      --build-arg ASPNETCORE_ENVIRONMENT="${CI_ENV_NAME}"
-
-      '
+  IMAGE_BUILD_ARGS: 
+    --build-arg NUGET_REPO_URL=${ARTIFACTORY_URL}
+    --build-arg NUGET_REPO_USER=${ARTIFACTORY_USER}
+    --build-arg NUGET_REPO_PASS=${ARTIFACTORY_PASSWORD}
+    --build-arg CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
+    --build-arg DATABASE_HOST=database
+    --build-arg DATABASE_PORT=${DATABASE_PORT}
+    --build-arg DATABASE_NAME=${DATABASE_NAME}
+    --build-arg DATABASE_USERNAME=Username_Here
+    --build-arg DATABASE_PASSWORD=Password_Here
+    --build-arg CORE_RABBITMQ_HOSTNAME=rabbit
+    --build-arg CORE_RABBITMQ_PORT=${CORE_RABBITMQ_PORT}
+    --build-arg CORE_RABBITMQ_USERNAME=Username_Here
+    --build-arg CORE_RABBITMQ_PASSWORD=Password_Here
+    --build-arg CORE_RABBITMQ_VIRTUALHOST=${CORE_RABBITMQ_VIRTUALHOST}
+    --build-arg ASPNETCORE_ENVIRONMENT=Development
 
 stages:
   - build_code_base

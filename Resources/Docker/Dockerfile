@@ -56,6 +56,8 @@ RUN dotnet nuget add source "$NUGET_REPO_URL/nuget/tcd-nuget/" \
             --password "$NUGET_REPO_PASS" \
             --store-password-in-clear-text
 
+RUN sleep 15 && dotnet nuget list source
+
 RUN dotnet restore Source/SingleSignOn/SingleSignOn.sln
 
 #####################################################
